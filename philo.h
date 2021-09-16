@@ -38,7 +38,7 @@ typedef struct s_philo
 	unsigned long	sleep_time;
 	unsigned long	start_time;
 	unsigned long	last_eat_time;
-//	pthread_mutex_t	*print_mutex;
+	pthread_mutex_t	*print_mutex;
 	pthread_mutex_t	fork1_mutex;
 	pthread_mutex_t	*fork2_mutex;
 }			t_philo;
@@ -49,6 +49,7 @@ void			sleepin(t_philo *philo);
 void			thinking(t_philo *philo);
 void			my_sleep(unsigned long sleep_time, unsigned long start_time);
 long			ft_atoi(const char *str);
+void			finish_routine(t_philo *philo, int philo_num);
 unsigned long	get_time(void);
 unsigned long	timestamp(unsigned long start_time);
 

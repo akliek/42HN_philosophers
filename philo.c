@@ -2,23 +2,25 @@
 
 bool validation(char **argv)
 {
-	return (1);
+	if (argv[1])
+		return (1);
+	return (0);
 }
 
-// void	finish_routine(t_philo *philo, int philo_num)
-// {
-// 	int	i;
+void	finish_routine(t_philo *philo, int philo_num)
+{
+	int	i;
 
-// 	i = 0;
-// 	while (i < philo_num)
-// 	{
-// 		pthread_mutex_destroy(philo[i].fork1_mutex);
-// 		i++;
-// 	}
-// 	pthread_mutex_destroy(philo[0].print_mutex);
-// 	free(philo);
-// 	exit(0);
-// }
+	i = 0;
+	while (i < philo_num)
+	{
+		pthread_mutex_destroy(&philo[i].fork1_mutex);
+		i++;
+	}
+	pthread_mutex_destroy(philo[0].print_mutex);
+	free(philo);
+	exit(0);
+}
 
 t_parse parse(char **argv)
 {
@@ -39,11 +41,9 @@ t_philo	*init(t_parse parse)
 {
 	int				i;
 	t_philo			*philo;
-	pthread_mutex_t	print_mutex;
 
 	i = 0;
 	philo = (t_philo *)malloc(parse.philo_num * sizeof(t_philo));
-//	pthread_mutex_init(&print_mutex, NULL);
 	while (i < parse.philo_num)
 	{
 		philo[i].eat_num = parse.eat_num;
@@ -51,6 +51,13 @@ t_philo	*init(t_parse parse)
 		philo[i].eat_time = parse.eat_time;
 		philo[i].philo_num = parse.philo_num;
 		philo[i].sleep_time = parse.sleep_time;
+		if (i == 0)
+		{
+			philo[i].print_mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+			pthread_mutex_init(philo[i].print_mutex, NULL);
+		}
+		else
+			philo[i].print_mutex = philo[0].print_mutex;
 		pthread_mutex_init(&philo[i].fork1_mutex, NULL);
 		if (i == parse.philo_num - 1)
 			philo[i].fork2_mutex = &philo[0].fork1_mutex;
@@ -81,7 +88,7 @@ void	create_threads(t_philo *philo, int philo_num)
 	while (--i > 0)
 		pthread_join(thread[i], NULL);
 	free(thread);
-//	finish_routine(philo, philo_num);
+	finish_routine(philo, philo_num);
 }
 
 int	main(int argc, char **argv)
