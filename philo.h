@@ -1,16 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: akliek <akliek@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/09/17 16:45:26 by akliek            #+#    #+#             */
+/*   Updated: 2021/10/05 17:50:54 by akliek           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILO_H
-#define PHILO_H
+# define PHILO_H
 
 # include <stdio.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <limits.h>
 # include <stdbool.h>
 # include <pthread.h>
 # include <sys/time.h>
 
+/*==========STATUS_STRUCT==========*/
+
 typedef enum e_status
 {
-	NONE,
 	DIED,
 	SLEEPING,
 	EATING,
@@ -18,7 +32,9 @@ typedef enum e_status
 	FORK
 }			t_status;
 
-typedef	struct s_parse
+/*==========PARSE_DATA_STRUCT==========*/
+
+typedef struct s_parse
 {
 	int				eat_num;
 	int				philo_num;
@@ -27,12 +43,15 @@ typedef	struct s_parse
 	unsigned long	sleep_time;
 }			t_parse;
 
+/*==========PHILOSOPHERS_DATA_STRUCT==========*/
 
 typedef struct s_philo
 {
-	int				philo;
+	int				index;
 	int				eat_num;
 	int				philo_num;
+	int				*wait_threads;
+	bool			*dead;
 	unsigned long	die_time;
 	unsigned long	eat_time;
 	unsigned long	sleep_time;
@@ -43,14 +62,33 @@ typedef struct s_philo
 	pthread_mutex_t	*fork2_mutex;
 }			t_philo;
 
-void			routine(t_philo *philo);
-void			eating(t_philo *philo);
-void			sleepin(t_philo *philo);
-void			thinking(t_philo *philo);
-void			my_sleep(unsigned long sleep_time, unsigned long start_time);
-long			ft_atoi(const char *str);
-void			finish_routine(t_philo *philo, int philo_num);
+/*==========UTILS==========*/
+
+long			atol(const char *str);
+void			my_sleep(unsigned long sleep_time,
+					unsigned long start_time);
 unsigned long	get_time(void);
 unsigned long	timestamp(unsigned long start_time);
+
+/*==========VALIDATION==========*/
+
+bool			validation(int argc, char **argv);
+
+/*==========INIT==========*/
+
+t_philo			*init(t_parse parse);
+
+/*==========PRINT==========*/
+
+void			print(t_philo *philo, t_status status);
+
+/*==========FINISH_CHECK==========*/
+
+void			clean_data(t_philo *philo);
+void			finish_check(t_philo **philo);
+
+/*==========ROUTINE==========*/
+
+void			prepare_routine(t_philo *philo);
 
 #endif

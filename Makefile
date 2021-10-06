@@ -6,7 +6,7 @@
 #    By: akliek <akliek@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/09/08 13:09:04 by akliek            #+#    #+#              #
-#    Updated: 2021/09/14 12:04:29 by akliek           ###   ########.fr        #
+#    Updated: 2021/10/05 11:09:17 by akliek           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,13 @@ CC = gcc
 
 CFLAGS = -Wall -Werror -Wextra
 
-SRC = *.c
+SRC = philo.c	\
+	validation.c	\
+	init.c	\
+	utils.c	\
+	routine.c	\
+	print.c	\
+	finish.c
 
 OBJ :=  $(SRC:.c=.o)
 

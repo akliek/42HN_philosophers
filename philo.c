@@ -1,107 +1,82 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: akliek <akliek@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/09/17 16:42:07 by akliek            #+#    #+#             */
+/*   Updated: 2021/10/06 11:45:20 by akliek           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-bool validation(char **argv)
-{
-	if (argv[1])
-		return (1);
-	return (0);
-}
-
-void	finish_routine(t_philo *philo, int philo_num)
-{
-	int	i;
-
-	i = 0;
-	while (i < philo_num)
-	{
-		pthread_mutex_destroy(&philo[i].fork1_mutex);
-		i++;
-	}
-	pthread_mutex_destroy(philo[0].print_mutex);
-	free(philo);
-	exit(0);
-}
-
-t_parse parse(char **argv)
+static t_parse	parse(char **argv)
 {
 	t_parse	parse;
 
 	if (argv[5])
-		parse.eat_num = ft_atoi(argv[5]);
+		parse.eat_num = atol(argv[5]);
 	else
 		parse.eat_num = -1;
-	parse.philo_num = ft_atoi(argv[1]);
-	parse.die_time = ft_atoi(argv[2]);
-	parse.eat_time = ft_atoi(argv[3]);
-	parse.sleep_time = ft_atoi(argv[4]);
+	parse.philo_num = atol(argv[1]);
+	parse.die_time = atol(argv[2]);
+	parse.eat_time = atol(argv[3]);
+	parse.sleep_time = atol(argv[4]);
 	return (parse);
 }
 
-t_philo	*init(t_parse parse)
+static void	wait_end(t_philo **philo)
 {
-	int				i;
-	t_philo			*philo;
+	int	i;
 
-	i = 0;
-	philo = (t_philo *)malloc(parse.philo_num * sizeof(t_philo));
-	while (i < parse.philo_num)
+	while (*(*philo)->dead == 0)
 	{
-		philo[i].eat_num = parse.eat_num;
-		philo[i].die_time = parse.die_time;
-		philo[i].eat_time = parse.eat_time;
-		philo[i].philo_num = parse.philo_num;
-		philo[i].sleep_time = parse.sleep_time;
-		if (i == 0)
-		{
-			philo[i].print_mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
-			pthread_mutex_init(philo[i].print_mutex, NULL);
-		}
-		else
-			philo[i].print_mutex = philo[0].print_mutex;
-		pthread_mutex_init(&philo[i].fork1_mutex, NULL);
-		if (i == parse.philo_num - 1)
-			philo[i].fork2_mutex = &philo[0].fork1_mutex;
-		else
-			philo[i].fork2_mutex = &philo[i + 1].fork1_mutex;
-		i++;	
+		i = 0;
+		while ((*philo)[i].eat_num == 0 && i < (*philo)->philo_num)
+			i++;
+		if (i == (*philo)->philo_num)
+			break ;
 	}
-	return (philo);
 }
 
-void	create_threads(t_philo *philo, int philo_num)
+static t_philo	*create_threads(t_philo *philo, int philo_num)
 {
 	int			i;
-	pthread_t	*thread;
+	pthread_t	thread;
 
 	i = 0;
-	thread = (pthread_t *)malloc(philo_num * sizeof(pthread_t));
 	while (i < philo_num)
 	{
-		philo[i].philo = i + 1;
-		philo[i].start_time = get_time();
-		philo[i].last_eat_time = philo[i].start_time;
-		if (pthread_create(&thread[i], NULL,
-			(void *(*)(void *))routine, (void *)&philo[i]))
+		philo[i].index = i + 1;
+		if (pthread_create(&thread, NULL,
+				(void *(*)(void *))prepare_routine, (void *)&philo[i]))
 			write(2, "Can't create thread\n", 20);
+		pthread_detach(thread);
 		i++;
 	}
-	while (--i > 0)
-		pthread_join(thread[i], NULL);
-	free(thread);
-	finish_routine(philo, philo_num);
+	if (pthread_create(&thread, NULL,
+			(void *(*)(void *))finish_check, (void *)&philo))
+		write(2, "Can't create thread\n", 20);
+	pthread_detach(thread);
+	wait_end(&philo);
+	usleep(1000000);
+	return (philo);
 }
 
 int	main(int argc, char **argv)
 {
 	t_parse	data;
-	t_philo *philo;
+	t_philo	*philo;
 
-	if (argc < 5 || argc > 6)
-		write(2, "Wrong number of arguments\n", 26);
-	if (!validation(argv))
-		write(2, "Penis\n", 6);	
+	if (!validation(argc, argv))
+		return (-1);
 	data = parse(argv);
+	if (data.philo_num == 0)
+		return (0);
 	philo = init(data);
-	create_threads(philo, data.philo_num);
+	philo = create_threads(philo, data.philo_num);
+	clean_data(philo);
 	return (0);
 }
