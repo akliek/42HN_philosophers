@@ -16,6 +16,7 @@ Links:
 Subject PDF: https://github.com/akliek/42HN_philosophers/blob/master/en.subject.pdf
 
 # Clone
+Open a terminal and run following command:
 ```
 git clone <repository url>
 ```
@@ -25,7 +26,7 @@ Then go to created repository and run following command:
 make
 ```
 # Run
-After that open a terminal in current folder and run following command:
+After insatalation you can run simulation by runing following command:
 ```
 ./philo <number_of_philosopher> <time_to_die> <time_to_eat> <time_to_sleep> [number_of_times_each_philosopher_must_eat]
 ```
