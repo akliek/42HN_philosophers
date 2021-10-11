@@ -13,6 +13,8 @@ concrete questions such as: Is there a best way to live? Is it better to be just
 
 Links:
 
+Wikipedia about threads: https://en.wikipedia.org/wiki/Thread_(computing)
+
 Subject PDF: https://github.com/akliek/42HN_philosophers/blob/master/en.subject.pdf
 
 # Clone
