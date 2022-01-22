@@ -32,7 +32,7 @@ After insatalation you can run simulation by runing following command:
 ```
 ./philo <number_of_philosopher> <time_to_die> <time_to_eat> <time_to_sleep> [number_of_times_each_philosopher_must_eat]
 ```
-# What do those options mean?
+# What do these options mean?
 ```
       ◦ number_of_philosophers: is the number of philosophers and also the number of forks
       ◦ time_to_die: is in milliseconds, if a philosopher doesn’t start eating ’time_to_die’ milliseconds
